@@ -10,12 +10,9 @@ app.config['DEBUG'] = True
 
 @app.route('/')
 def hello():
-    """Return an index page."""
-    try:
-    	return render_template('index.html')
-    except Exception as ex:
-    	 logging.error(str(ex))
-    	 return "error"
+	"""Return an index page."""
+	return render_template('index.html')
+
 
 
 
