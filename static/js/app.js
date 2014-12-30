@@ -2,6 +2,9 @@ var lcgdemo = angular.module('lcgdemo',[]);
 
 lcgdemo.controller('HomeCtrl', function ($scope,$http)
 {
+	$scope.initCanvas=[];
+	$scope.currentgames=[];
+	$scope.gamestates=[];
 	$scope.user="";
 	$scope.loggedin=false;
 	$scope.connected=false;
@@ -127,12 +130,16 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 					if(data.msgType == 'joinRoom')
 					{
 
+						var roomname=data.destination;
+						if(data.destination in $scope.currentgames)
+							roomname=$scope.currentgames[data.destination];
+
 						$("[data-room-name='"+data.destination+"']").append(
 						$('<tr>')
 						.addClass('success')
 						.addClass('sysmsg')
 							.append($('<td>').attr('colspan','100%')
-								.text("Connected to Room: "+data.destination+" at "+new Date().toLocaleTimeString()))
+								.text("Connected to Room: "+roomname+" at "+new Date().toLocaleTimeString()))
 						);
 
 						$("[data-room-name='"+data.destination+"']").append(
@@ -320,7 +327,292 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 	$scope.viewCards = function()
 	{
 		$scope.active='cards';
+		var dataset=[];
+		$("canvas").each(function(i)
+		{
+			if(!$scope.initCanvas[$(this).attr("id")])
+			{
+				$scope.fabricInit($(this).attr("id"));
 
+				if($(this).attr("id")=="deckbuilder-canvas")
+				{
+					$.getJSON('getcards',function(data)
+					{
+						$.each(data,function(f,g){
+							dataset.push(
+							[
+								g["cardtype"],
+								g["faction"],
+								g["title"],
+								g["traits"],
+								g["cardtxt"],
+								g["icons"],
+								g["cost"],
+								g["cardstr"],
+								g["loyal"]?'Yes':'No',
+								g["pclaim"],
+								g["pgold"],
+								g["pinit"],
+								g["pres"]
+							]
+
+							);
+						})
+
+					}).then(function() {
+
+						var cardtable=$("#cardlist").DataTable(
+							{
+								data:dataset,
+								"dom": 'C<"clear">Rlfrtip'
+							});
+						 $("#cardlist tbody").on('click','tr',function()
+						 {
+						 	$('#cardlist tbody tr').removeClass('selected');
+						 	$(this).toggleClass('selected');
+						 });
+					});
+				}
+
+			}
+		});
+
+		
+	}
+
+	$scope.newGame = function()
+	{
+
+		
+		
+
+
+		var gamename=$('#gamename').val()
+		var gameid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+		});
+		var gametype="Game of Thrones (Joust)"
+		var gamepublic = $('#gamepublic').is(':checked');
+		var chatroom = gameid //game id is the room id, should make things a little easier
+		$("#tabnav li").removeClass("active");
+		//create new tab with title = game name
+		$("#tabnav").append(
+			$("<li>")
+				.append(
+					$("<a>")
+					.attr("href","#"+gameid)
+					.attr("data-toggle","tab")
+					.text(gamename)
+
+					)
+				.addClass("active")
+				);
+
+		$("#tabholder div").removeClass("active");
+
+		$("#tabholder").append(
+				$("<div>").text("CREATED A NEW GAME OMG: "+gamename)
+				.addClass("active")
+
+			)
+
+		$scope.currentgames[gameid]=gamename; //map id to name for display reasons
+
+		//call create game with data
+		var jmsgsend={
+							'userdisplayname':$scope.user,
+							'userid': $scope.userid,
+							'channelguid': $scope.myguid,
+							'gameid':gameid,
+							'gamename':gamename,
+							'gametype':gametype,
+							'chatroom':chatroom,
+							'public':gamepublic
+							
+						};
+		//send action to init player, 
+
+	}
+	$scope.resetNewGameForm =function()
+	{
+		$('#gamename').val("");
+		$('#gamepublic').attr('checked',false);
+	}
+
+	$scope.loadCards=function()
+	{
+
+		//draw a card
+			//rectangle
+			//text
+			//placeholder for image
+		var canvas=$scope.initCanvas["deckbuilder-canvas"];
+		
+		fabric.Image.fromURL('static/img/game-of-thrones_card-back.jpg',
+			function(img)
+			{
+				img.hasControls=false;
+				canvas.add(img);
+			});
+
+		var border = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 0,
+			  top: 0,
+			  fill: 'white',
+			  width: 300,
+			  height: 421,
+			  strokeWidth:5,
+			  stroke: 'rgba(0,0,0,1)'
+			});
+		
+		var fborder = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 5,
+			  top: 5,
+			  fill: 'white',
+			  width: 275,
+			  height: 396,
+			  strokeWidth:20,
+			  stroke: 'rgba(229,207,56,1)'
+			});
+
+
+		var cost = new fabric.Group([new fabric.Circle({
+			radius:25,
+			fill:'white',
+			stroke:'rgba(0,0,0,1)' ,
+			strokeWidth: 5,
+			originX:'center',
+			originY: 'center',
+
+		}),new fabric.Text ('6',{
+			fontSize: 30,
+			originX:'center',
+			originY: 'center',
+		})],
+		{
+			hasControls:false,
+			top:15,
+			left:15,
+		});
+
+		var group = new fabric.Group([border,fborder,cost], {
+			hasControls:false,
+			left:150,
+			top:100,
+		});
+		canvas.add(group);
+
+	}
+	$scope.getCanvasCard=function(card,x,y)
+	{
+		
+		var factionColors=
+		{
+			"Plot":"rgba(198,174,121,1)",
+			"Baratheon":"rgba(229,207,56,1)",
+			"Greyjoy":"rgba(62,102,173,1)",
+			"Lannister":"rgba(242,53,46,1)",
+			"Martell":"rgba(243,120,49,1)",
+			"Neutral":"rgba(198,174,121,1)",
+			"Night's Watch":"rgba(26,26,26,1)",
+			"Stark":"rgba(230,230,230,1)",
+			"Targaryen":"rgba(128,25,29,1)",
+			"Tyrell":"rgba(55,149,73,1)",
+
+		};
+		
+		var border;
+		var fborder;
+		if(card.cardtype=="Plot") //sideways
+		{
+			border = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 0,
+			  top: 0,
+			  fill: 'white',
+			  width: 421,
+			  height: 300,
+			  strokeWidth:5,
+			  stroke: 'rgba(0,0,0,1)'
+			});
+			var fborder = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 5,
+			  top: 5,
+			  fill: 'white',
+			  width: 396,
+			  height: 275,
+			  strokeWidth:20,
+			  stroke: factionColors[card["faction"]]
+			});
+		
+		}
+		else
+		{
+			border = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 0,
+			  top: 0,
+			  fill: 'white',
+			  width: 300,
+			  height: 421,
+			  strokeWidth:5,
+			  stroke: 'rgba(0,0,0,1)'
+			});
+			var fborder = new fabric.Rect({
+			  lockRotation: true,
+			  lockScalingX: true,
+			  lockScalingY:true,
+			  hasBorders:false,
+			  hasControls:false,
+			  left: 5,
+			  top: 5,
+			  fill: 'white',
+			  width: 275,
+			  height: 396,
+			  strokeWidth:20,
+			  stroke: factionColors[card["faction"]]
+			});
+
+		
+		}
+	}
+
+	$scope.fabricInit = function fabricInit(id)
+	{
+		var canvas = new fabric.Canvas(id);
+		
+		$(canvas.getElement().parentNode).on('mousewheel', function(e) {
+			var newZoom = canvas.getZoom() + (e.originalEvent.deltaY / 300)/100;
+      		canvas.zoomToPoint({ x: e.offsetX, y: e.offsetY }, newZoom);
+			return false;
+		});
+
+		$scope.initCanvas[id]=canvas;
+		canvas.setBackgroundColor("rgba(240,240,240,0.5)",canvas.renderAll.bind(canvas));
 	}
 
 });

@@ -254,3 +254,12 @@ th { text-align:center;}
 .hidden { 
 display: none;
 }
+canvas
+{
+	padding-bottom: 50px;
+}
+.cardtable > tbody >tr  
+{
+	font-family:'AGOTLCGIcons','Big Caslon';
+
+}

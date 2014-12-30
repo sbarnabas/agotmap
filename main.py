@@ -44,8 +44,62 @@ class Card(ndb.Model):
 	ver  = ndb.StringProperty()
 
 
+class CardLocation(ndb.Model):
+	xval = ndb.FloatProperty()
+	yval = ndb.FloatProperty()
+	zindex = ndb.IntegerProperty()
+
+class CardToken(ndb.Model):
+	tokentype = ndb.StringProperty()
+	count = ndb.IntegerProperty()
+
+
+class Pile(ndb.Model):
+	name = ndb.StringProperty()
+	cards = ndb.LocalStructuredProperty(Card,repeated=True)
+	ownervisible = ndb.BooleanProperty()
+	worldvisible = ndb.BooleanProperty()
+	stacked = ndb.BooleanProperty()
+
+
+class Player(ndb.Model):
+	user = ndb.LocalStructuredProperty(User)
+	piles = ndb.LocalStructuredProperty(Pile,repeated=True)
+	gold = ndb.IntegerProperty()
+
+class PlayedCard(ndb.Model):
+	card = ndb.StructuredProperty(Card)
+	owner = ndb.StructuredProperty(Player)
+	location = ndb.StructuredProperty(CardLocation)
+	ownervisible = ndb.BooleanProperty()
+	worldvisible = ndb.BooleanProperty()	
+	tokens = ndb.LocalStructuredProperty(CardToken,repeated=True)
+
+class GameState(ndb.Model):
+	canvas = ndb.TextProperty()
+	playedcards = ndb.LocalStructuredProperty(PlayedCard, repeated=True)
+
+
+class GameAction(ndb.Model):
+	action = ndb.StringProperty()
+	timestamp = ndb.DateTimeProperty(auto_now_add=True)
+
+class Game(ndb.Model):
+	name = ndb.StringProperty()
+	gametype = ndb.StringProperty()
+	public = ndb.BooleanProperty()
+	players = ndb.LocalStructuredProperty(Player,repeated=True)
+	spectators = ndb.LocalStructuredProperty(User,repeated=True)
+	chatroom  = ndb.StructuredProperty(Room)
+	gamestate = ndb.StructuredProperty(GameState)
+	actions = ndb.LocalStructuredProperty(GameAction,repeated=True)
+
+
 # Note: We don't need to call run() since our application is embedded within
 # the App Engine WSGI application server.
+
+
+
 
 class MainPage(webapp2.RequestHandler):
   """This page is responsible for showing the game UI. It may also
@@ -190,7 +244,7 @@ class Disconnecter(webapp2.RequestHandler):
 				room.users.remove(userToRemove)
 				#send leftroom message
 				rpop = len(room.users)
-				#send a joined message to all the other users
+				#send a left message to all the other users
 				jmsg = { 
 				'msgType':'leftRoom',
 				'destination':room.name,
@@ -240,6 +294,47 @@ class GetCards(webapp2.RequestHandler):
 	def get(self):
 		return self.response.out.write(json.dumps([p.to_dict() for p in self.cards]))
 
+class CreateGame(webapp2.RequestHandler):
+	
+	def post(self):
+		obj = json.loads(self.request.body)
+		u = User(
+					displayName = obj["userdisplayname"],
+					userID = obj["userid"],
+					channelID=obj["channelguid"]
+					)
+		g = Game(
+				id = obj["gameid"],
+				name=obj["gamename"],
+				gametype=obj["gametype"],
+				public = obj["public"],
+				players=[Player(
+						user=u,
+						piles=[],
+						gold=0
+						)],
+				spectators =[],
+				chatroom = Room(id=obj["chatroom"],
+					name=obj["chatroom"],
+					users=[u],
+					messages=[]),
+				gamestate=None,
+				actions = [GameAction(
+					action="Game "+obj["gamename"]+"("+obj["gametype"]+") created by "+ obj["userdisplayname"])
+				]
+			)
+
+		g.put()
+		#send message to room associated with the game
+				#send a successful join response to the original user
+		jmsg2 = {
+		'msgType':'joinRoom',
+		'destination':obj["chatroom"],
+		'username':obj["userdisplayname"],
+		'population': "1"
+		}
+		channel.send_message(obj["userid"]+obj["channelguid"]+'0',json.dumps(jmsg2))
+		pass
 
 
 jinja_environment = jinja2.Environment(
