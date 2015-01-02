@@ -122,6 +122,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 					
 				};
 
+
 				$scope.socket.onmessage = function(m) { 
 
 				
@@ -341,6 +342,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 						$.each(data,function(f,g){
 							dataset.push(
 							[
+								g["index"],
 								g["cardtype"],
 								g["faction"],
 								g["title"],
@@ -364,7 +366,16 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 						var cardtable=$("#cardlist").DataTable(
 							{
 								data:dataset,
-								"dom": 'C<"clear">Rlfrtip'
+								"dom": 'C<"clear">Rlfrtip',
+								"columnDefs": [
+						            {
+						                "targets": [ 0 ],
+						                "visible": false,
+						                "searchable": false
+						            },
+						           
+						        ]
+
 							});
 						 $("#cardlist tbody").on('click','tr',function()
 						 {
@@ -413,7 +424,9 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 
 		$("#tabholder").append(
 				$("<div>").text("CREATED A NEW GAME OMG: "+gamename)
+				.attr("id",gameid)
 				.addClass("active")
+				.addClass("tab-pane")
 
 			)
 
@@ -517,88 +530,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 	$scope.getCanvasCard=function(card,x,y)
 	{
 		
-		var factionColors=
-		{
-			"Plot":"rgba(198,174,121,1)",
-			"Baratheon":"rgba(229,207,56,1)",
-			"Greyjoy":"rgba(62,102,173,1)",
-			"Lannister":"rgba(242,53,46,1)",
-			"Martell":"rgba(243,120,49,1)",
-			"Neutral":"rgba(198,174,121,1)",
-			"Night's Watch":"rgba(26,26,26,1)",
-			"Stark":"rgba(230,230,230,1)",
-			"Targaryen":"rgba(128,25,29,1)",
-			"Tyrell":"rgba(55,149,73,1)",
-
-		};
-		
-		var border;
-		var fborder;
-		if(card.cardtype=="Plot") //sideways
-		{
-			border = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 0,
-			  top: 0,
-			  fill: 'white',
-			  width: 421,
-			  height: 300,
-			  strokeWidth:5,
-			  stroke: 'rgba(0,0,0,1)'
-			});
-			var fborder = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 5,
-			  top: 5,
-			  fill: 'white',
-			  width: 396,
-			  height: 275,
-			  strokeWidth:20,
-			  stroke: factionColors[card["faction"]]
-			});
-		
-		}
-		else
-		{
-			border = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 0,
-			  top: 0,
-			  fill: 'white',
-			  width: 300,
-			  height: 421,
-			  strokeWidth:5,
-			  stroke: 'rgba(0,0,0,1)'
-			});
-			var fborder = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 5,
-			  top: 5,
-			  fill: 'white',
-			  width: 275,
-			  height: 396,
-			  strokeWidth:20,
-			  stroke: factionColors[card["faction"]]
-			});
-
-		
-		}
+	
 	}
 
 	$scope.fabricInit = function fabricInit(id)
