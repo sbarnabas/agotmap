@@ -1,0 +1,203 @@
+Host of Storm's End	1
+Robert Baratheon	2
+Stannis Baratheon	3
+Melisandre	4
+King's Hunting Party	6
+Ser Davos Seaworth	5
+Fiery Followers	9
+Maester Cressen	7
+Selyse Baratheon	8
+Bastard in Hiding	11
+Shireen Baratheon	10
+Vanguard Lancer	23
+Tithe Collector	12
+Host of the Isles	24
+Euron Crow's Eye	25
+Balon Greyjoy	26
+Asha Greyjoy	27
+Drowned Men	29
+Theon Greyjoy	28
+Aeron Damphair	30
+Alannys Greyjoy	31
+Black Wind's Crew	32
+Lordsport Shipwright	34
+Maester Wendamyr	33
+Salty Navigator	35
+Iron Islands Fishmonger	36
+Lord Tywin's Host	47
+Tywin Lannister	48
+Ser Jaime Lannister	49
+Tyrion Lannister	50
+Cersei Lannister	51
+Gold Cloaks	52
+Grand Maester Pycelle	54
+Joffrey Baratheon	53
+The Queen's Assassin	55
+Burned Men	57
+Lannisport Moneylender	58
+The Tickler	56
+Steward of the Rock	59
+Host of the Boneway	70
+The Red Viper	71
+Doran Martell	72
+Arianne Martell	73
+Areo Hotah	74
+Palace Spearmen	75
+Dornish Paramour	78
+Maester Caleotte	77
+Obara Sand	76
+Edric Dayne	79
+Greenblood Trader	80
+House Dayne Knight	81
+Desert Scavenger	82
+Old Bear Mormont	152
+Benjen Stark	154
+Ghost	153
+Jon Snow	156
+Maester Aemon	157
+Ranging Party	155
+Yoren	158
+Samwell Tarly	160
+Ser Waymar Royce	161
+Veteran Builder	159
+Messenger Raven	165
+Steward at the Wall	164
+Young Ranger	162
+War Host of the North	174
+Eddard Stark	175
+Robb Stark	176
+Grey Wind	177
+Catelyn Stark	178
+Vanguard of the North	179
+Arya Stark	180
+Sansa Stark	181
+Tully Loyalist	182
+Bran Stark	183
+Direwolf Pup	185
+Summer	184
+Winterfell Steward	186
+Great Khalasar	197
+Daenerys Targaryen	198
+Khal Drogo	199
+Magister Illyrio	200
+Unsullied	202
+Drogon	203
+Rhaegal	204
+Viserion	205
+Braided Warriors	207
+Handmaiden	208
+Ser Jorah Mormont	201
+Viserys Targaryen	206
+Targaryen Loyalist	209
+Highgarden's Finest	220
+The Queen of Thorns	221
+Randyll Tarly	222
+The Knight of Flowers	223
+Paxter Redwyne	224
+Wardens of the Reach	225
+Maester Lomys	227
+Margaery Tyrell	226
+Olenna's Informant	228
+Courtesan of the Rose	231
+Left	229
+Right	230
+Garden Caretaker	232
+Varys	120
+Littlefinger	118
+Wildling Raiders	121
+Lightbringer	13
+Throwing Axe	37
+Widow's Wail	60
+Dawn	83
+Longclaw	163
+Ice	187
+Drogo's Arakh	214
+Heartsbane	233
+Little Bird	114
+Noble Lineage	115
+Syrio's Training	116
+Bodyguard	113
+Milk of the Poppy	117
+Seal of the Hand	119
+Fealty	124
+Dragonstone Port	14
+Chamber of the Painted Table	16
+The Red Keep	17
+Sea Tower	38
+Longship Great Kraken	40
+Iron Fleet Scout	41
+The Westerlands	61
+Casterly Rock	63
+Lannisport	64
+Blood Orange Grove	84
+Ghaston Grey	86
+Sunspear	87
+The Roseroad	143
+The Searoad	147
+The Iron Throne	128
+Castle Black	166
+The Wall	167
+Winterfell Heart Tree	188
+The Wolfswood	190
+Gates of Winterfell	191
+Illyrio's Estate	210
+Plaza of Punishment	212
+Dothraki Sea	213
+Rose Garden	234
+Highgarden	236
+The Mander	237
+Consolidation of Power	18
+Seen In Flames	19
+Ours Is the Fury	20
+Rise of the Kraken	42
+We Do Not Sow	43
+Risen from the Sea	44
+Treachery	65
+The Things I Do for Love	66
+Hear Me Roar!	67
+Poison	88
+Patience	89
+Doran's Game	90
+Put to the Sword	122
+Put to the Torch	123
+Tears of Lys	125
+Superior Claim	126
+The Hand's Judgement	127
+Take the Black	168
+A Meager Contribution	169
+The Sword in the Darkness	171
+Winter Is Coming	192
+Like Warm Rain	193
+For the North!	194
+Waking the Dragon	215
+Dracarys!	216
+Fire and Blood	217
+Growing Strong	238
+Olenna's Cunning	239
+"The Bear and the Maiden Fair"	240
+A Clash of Kings	108
+A Feast for Crows	141
+A Game of Thrones	107
+A Noble Cause	130
+A Storm of Swords	109
+Blockade	105
+Building Orders	103
+Calling the Banners	137
+Calm Over Westeros	97
+Confiscation	100
+Counting Coppers	95
+Filthy Accusations	94
+Fortified Position	139
+Heads on Spikes	129
+Holding the Trident	138
+Marched to the Wall	111
+Marching Orders	93
+Power Behind the Throne	142
+Rebuilding	140
+Reinforcements	106
+Sneak Attack	110
+Summons	101
+Supporting the Faith	112
+Taxation	96
+The Winds of Winter	104
+Wildfire Assault	98
