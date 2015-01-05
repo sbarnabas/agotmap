@@ -123,6 +123,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 					
 				};
 
+
 				$scope.socket.onmessage = function(m) { 
 
 				
@@ -368,6 +369,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 								data:dataset,
 								"dom": 'C<"clear">Rlfrtip',
 								"columnDefs": [
+<<<<<<< HEAD
 								{
 									"targets": [0],
 									"visible":false,
@@ -391,6 +393,15 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 										 			
 										            return nRow;
 										        },
+=======
+						            {
+						                "targets": [ 0 ],
+						                "visible": false,
+						                "searchable": false
+						            },
+						           
+						        ]
+>>>>>>> origin/master
 
 							});
 						
@@ -442,7 +453,9 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 
 		$("#tabholder").append(
 				$("<div>").text("CREATED A NEW GAME OMG: "+gamename)
+				.attr("id",gameid)
 				.addClass("active")
+				.addClass("tab-pane")
 
 			)
 
@@ -536,8 +549,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 	}
 	$scope.getCanvasCard=function(card,x,y)
 	{
-		
-		var factionColors=
+				var factionColors=
 		{
 			"Plot":"rgba(198,174,121,1)",
 			"Baratheon":"rgba(229,207,56,1)",
@@ -555,6 +567,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 		var border;
 		var fborder;
 		
+
 	}
 
 	$scope.fabricInit = function fabricInit(id)
