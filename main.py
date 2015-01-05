@@ -28,6 +28,7 @@ class Room(ndb.Model):
 	messages = ndb.StructuredProperty(Message,repeated=True)
 
 class Card(ndb.Model):
+	index = ndb.StringProperty()
 	faction = ndb.StringProperty()
 	title = ndb.StringProperty()
 	cardtype = ndb.StringProperty()
@@ -88,6 +89,7 @@ class Game(ndb.Model):
 	name = ndb.StringProperty()
 	gametype = ndb.StringProperty()
 	public = ndb.BooleanProperty()
+	hasmaxplayers = ndb.BooleanProperty()
 	players = ndb.LocalStructuredProperty(Player,repeated=True)
 	spectators = ndb.LocalStructuredProperty(User,repeated=True)
 	chatroom  = ndb.StructuredProperty(Room)
@@ -272,25 +274,39 @@ class GetCards(webapp2.RequestHandler):
 
 	def __init__(self,request,response):
 		self.initialize(request,response)
+		with open('static/data/cardmapping.txt','rU') as f:
+			cmapraw = f.readlines()
+		
+		#get rid of quotes
+		cmap = {" ".join(s.split()[:-1])
+			.decode('utf-8').translate(dict.fromkeys([0x0022,0x0022,0x0027,0x0027])).encode('utf-8'):s.split()[-1] for s in cmapraw}
+		cmapnames = cmap.keys()
 		with open('static/data/agot2ecards-new.tab','rU') as f:
 			reader = csv.reader(f,delimiter='\t')
 			for faction,title,cardtype,icons,cost,loyal,pclaim,pgold,pinit,pres,cardstr,cardtxt,traits,ver in reader:
-				self.cards.append (Card(
-					faction = faction,
-					title = title,
-					cardtype = cardtype,
-					icons = icons,
-					cost = cost,
-					loyal  = loyal,
-					pclaim  = pclaim,
-					pgold  = pgold,
-					pinit  = pinit,
-					pres  = pres,
-					cardstr = cardstr,
-					cardtxt = cardtxt,
-					traits = traits,
-					ver  = ver
-					))
+				clean=title.decode('utf-8').translate(dict.fromkeys([0x201c, 0x201d, 0x2018, 0x2019])).encode('utf-8')
+			
+				if "(title)" not in title:
+					self.cards.append (Card(
+						#this is terrible, please don't ever do this for real; 
+						index = cmap[next(i for i in cmapnames if i.upper() in clean.upper())],
+						faction = faction,
+						title = title,
+						cardtype = cardtype,
+						icons = icons,
+						cost = cost,
+						loyal  = loyal,
+						pclaim  = pclaim,
+						pgold  = pgold,
+						pinit  = pinit,
+						pres  = pres,
+						cardstr = cardstr,
+						cardtxt = cardtxt,
+						traits = traits,
+						ver  = ver
+						))
+
+
 	def get(self):
 		return self.response.out.write(json.dumps([p.to_dict() for p in self.cards]))
 
@@ -319,6 +335,7 @@ class CreateGame(webapp2.RequestHandler):
 					users=[u],
 					messages=[]),
 				gamestate=None,
+				hasmaxplayers=False,
 				actions = [GameAction(
 					action="Game "+obj["gamename"]+"("+obj["gametype"]+") created by "+ obj["userdisplayname"])
 				]
@@ -336,6 +353,13 @@ class CreateGame(webapp2.RequestHandler):
 		channel.send_message(obj["userid"]+obj["channelguid"]+'0',json.dumps(jmsg2))
 		pass
 
+class GetGames(webapp2.RequestHandler):
+		def get(self):
+			query=Game.query(ndb.OR(Game.public == True,Game.hasmaxplayers == False)).fetch()
+			return json.dumps({g.id: {g.name, g.players[0].user.displayName,g.public} for g in query})
+
+
+
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)+'/templates'))
@@ -343,6 +367,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
 							   ('/gettoken',GetToken),
 							   ('/sendmsg',SendMsg),
 							   ('/purge',Purge),
+							   ('/getgames',GetGames),
 							   ('/_ah/channel/disconnected/', Disconnecter),
 							   ('/getcards',GetCards)
 							   ],

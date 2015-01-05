@@ -50,6 +50,7 @@ Edric Dayne	79
 Greenblood Trader	80
 House Dayne Knight	81
 Desert Scavenger	82
+Old Forest Hunter 151
 Old Bear Mormont	152
 Benjen Stark	154
 Ghost	153
@@ -201,3 +202,19 @@ Supporting the Faith	112
 Taxation	96
 The Winds of Winter	104
 Wildfire Assault	98
+House Baratheon 22
+Support of House Baratheon 21
+House Greyjoy 46
+Support of House Greyjoy 45
+House Lannister 69
+Support of House Lannister 68
+House Martell 92
+Support of House Martell 91
+The Night's Watch 173
+Support of the Night's Watch 172
+House Stark 196
+Support of House Stark 195
+House Targaryen 219
+Support of House Targaryen 218
+House Tyrell 242
+Support of House Tyrell 241

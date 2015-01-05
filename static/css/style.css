@@ -258,8 +258,28 @@ canvas
 {
 	padding-bottom: 50px;
 }
+.cardtable
+{
+
+  table-layout: fixed;
+  width: 120px;
+
+}
+.cardtable > tbody >tr >td {
+  white-space: nowrap;
+  overflow: hidden;         /* <- this does seem to be required */
+  text-overflow: ellipsis;
+}
 .cardtable > tbody >tr  
 {
 	font-family:'AGOTLCGIcons','Big Caslon';
 
 }
+.cardtext
+{
+  width: 100px;
+   white-space: nowrap;
+   overflow: hidden;         
+   text-overflow: ellipsis;
+}
+:focus {outline:none;}

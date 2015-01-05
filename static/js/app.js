@@ -1,5 +1,6 @@
 var lcgdemo = angular.module('lcgdemo',[]);
 
+
 lcgdemo.controller('HomeCtrl', function ($scope,$http)
 {
 	$scope.initCanvas=[];
@@ -341,6 +342,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 						$.each(data,function(f,g){
 							dataset.push(
 							[
+								g["index"],
 								g["cardtype"],
 								g["faction"],
 								g["title"],
@@ -364,8 +366,34 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 						var cardtable=$("#cardlist").DataTable(
 							{
 								data:dataset,
-								"dom": 'C<"clear">Rlfrtip'
+								"dom": 'C<"clear">Rlfrtip',
+								"columnDefs": [
+								{
+									"targets": [0],
+									"visible":false,
+									"searchable":false,
+								}],
+								"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+ 
+										           
+										            $('td:eq(4)', nRow).html("").append(
+										            	 $("<div>").addClass('cardtext')
+										            	 			   .attr('data-content', aData[5])
+										            				   .attr('data-placement','top')
+										            				   .attr('data-trigger','hover')
+										            				   .attr('data-original-title',aData[3])
+										            				   .attr('data-toggle','popover')
+										            				   .popover({ trigger: "hover" })
+										            				   .text(aData[5])
+										            	);
+
+										            				   
+										 			
+										            return nRow;
+										        },
+
 							});
+						
 						 $("#cardlist tbody").on('click','tr',function()
 						 {
 						 	$('#cardlist tbody tr').removeClass('selected');
@@ -376,13 +404,14 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 
 			}
 		});
+		//get list of games, and set up polling if it's not already setup
+
 
 		
 	}
 
 	$scope.newGame = function()
 	{
-
 		
 		
 
@@ -440,7 +469,7 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 		$('#gamepublic').attr('checked',false);
 	}
 
-	$scope.loadCards=function()
+	$scope.addCard=function()
 	{
 
 		//draw a card
@@ -448,70 +477,61 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 			//text
 			//placeholder for image
 		var canvas=$scope.initCanvas["deckbuilder-canvas"];
-		
-		fabric.Image.fromURL('static/img/game-of-thrones_card-back.jpg',
+
+		var cardtable=$("#cardlist").DataTable();
+		if(!cardtable.row($("#cardlist tbody .selected")))
+		{
+			swal("Error","Please select a card!","error");
+			return;
+		}
+		var data=cardtable.row($("#cardlist tbody .selected")).data();
+		if(!data)
+		{
+			swal("Error","Please select a card!","error");
+			return;
+		}
+
+
+	
+	
+		fabric.Image.fromURL('static/img/cards/'+((1e15+data[0]+"").slice(-3))+'.png',
 			function(img)
 			{
 				img.hasControls=false;
+
+				if(data[1]=="Plot")
+					img.rotate(90);
+				img.scale(0.6);
+				img.on('object:dblclick',function(options)
+				{
+					if(img.getAngle() == 0)
+					{
+						img.rotate(60);
+						canvas.renderAll();
+					}	
+					else if(img.getAngle()!=90)
+					{
+							img.rotate(0);
+							canvas.renderAll();
+					}
+
+				});
+				img.on('mouse:down',function(options)
+				{
+					console.dir(options)
+
+					if(options.e.button==2)
+					{
+						console.log('right click yo');
+						options.e.preventDefault();
+						return false;
+					}
+					return true;
+				});
 				canvas.add(img);
 			});
-
-		var border = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 0,
-			  top: 0,
-			  fill: 'white',
-			  width: 300,
-			  height: 421,
-			  strokeWidth:5,
-			  stroke: 'rgba(0,0,0,1)'
-			});
+	
 		
-		var fborder = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 5,
-			  top: 5,
-			  fill: 'white',
-			  width: 275,
-			  height: 396,
-			  strokeWidth:20,
-			  stroke: 'rgba(229,207,56,1)'
-			});
-
-
-		var cost = new fabric.Group([new fabric.Circle({
-			radius:25,
-			fill:'white',
-			stroke:'rgba(0,0,0,1)' ,
-			strokeWidth: 5,
-			originX:'center',
-			originY: 'center',
-
-		}),new fabric.Text ('6',{
-			fontSize: 30,
-			originX:'center',
-			originY: 'center',
-		})],
-		{
-			hasControls:false,
-			top:15,
-			left:15,
-		});
-
-		var group = new fabric.Group([border,fborder,cost], {
-			hasControls:false,
-			left:150,
-			top:100,
-		});
-		canvas.add(group);
 
 	}
 	$scope.getCanvasCard=function(card,x,y)
@@ -534,85 +554,44 @@ lcgdemo.controller('HomeCtrl', function ($scope,$http)
 		
 		var border;
 		var fborder;
-		if(card.cardtype=="Plot") //sideways
-		{
-			border = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 0,
-			  top: 0,
-			  fill: 'white',
-			  width: 421,
-			  height: 300,
-			  strokeWidth:5,
-			  stroke: 'rgba(0,0,0,1)'
-			});
-			var fborder = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 5,
-			  top: 5,
-			  fill: 'white',
-			  width: 396,
-			  height: 275,
-			  strokeWidth:20,
-			  stroke: factionColors[card["faction"]]
-			});
 		
-		}
-		else
-		{
-			border = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 0,
-			  top: 0,
-			  fill: 'white',
-			  width: 300,
-			  height: 421,
-			  strokeWidth:5,
-			  stroke: 'rgba(0,0,0,1)'
-			});
-			var fborder = new fabric.Rect({
-			  lockRotation: true,
-			  lockScalingX: true,
-			  lockScalingY:true,
-			  hasBorders:false,
-			  hasControls:false,
-			  left: 5,
-			  top: 5,
-			  fill: 'white',
-			  width: 275,
-			  height: 396,
-			  strokeWidth:20,
-			  stroke: factionColors[card["faction"]]
-			});
-
-		
-		}
 	}
 
 	$scope.fabricInit = function fabricInit(id)
 	{
-		var canvas = new fabric.Canvas(id);
+		var canvas = new fabric.CanvasEx(id);
 		
 		$(canvas.getElement().parentNode).on('mousewheel', function(e) {
 			var newZoom = canvas.getZoom() + (e.originalEvent.deltaY / 300)/100;
       		canvas.zoomToPoint({ x: e.offsetX, y: e.offsetY }, newZoom);
 			return false;
 		});
+		canvas.getElement().parentNode.tabIndex=1000;
+		$(canvas.getElement().parentNode).keydown(function(evt)
+		{
+			console.dir(evt);
+			if(evt.which == 46) //delete
+			{
+				if(canvas.getActiveGroup()){
+			      canvas.getActiveGroup().forEachObject(function(o){ canvas.remove(o) });
+			      canvas.discardActiveGroup().renderAll();
+			    } else {
+			      canvas.remove(canvas.getActiveObject());
+			    }
+				evt.preventDefault();
+			}
+
+		});
 
 		$scope.initCanvas[id]=canvas;
 		canvas.setBackgroundColor("rgba(240,240,240,0.5)",canvas.renderAll.bind(canvas));
+
+		canvas.on("object:selected", function(options) {
+					    options.target.bringToFront();
+					});
+		$('.upper-canvas').bind('contextmenu', function (e) {
+            return false;
+        });
 	}
 
 });
